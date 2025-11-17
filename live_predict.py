@@ -6,22 +6,23 @@ import mediapipe as mp
 import torch.nn.functional as F
 from torchvision import transforms
 
-# === CONFIG ===
-MODEL_PATH = "asl_model_large.pth"   # your saved model
-IMG_SIZE = 256                 # must match training
-CLASS_NAMES = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'O', 'P', 'R']
+MODEL_PATH = "asl_model_large.pth"
+IMG_SIZE = 256
+CLASS_NAMES = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 
+               'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y'] \
+              if "large" in MODEL_PATH else ['A', 'B']
 
 class CNNClassifier(nn.Module):
-    def __init__(self, num_classes=16):
+    def __init__(self, num_classes=len(CLASS_NAMES)):
         super().__init__()
 
         # Convolutional backbone
         self.conv1 = nn.Conv2d(3, 32, kernel_size=3, padding=1)
-        self.pool1 = nn.MaxPool2d(2, 2)   # → 128x128
+        self.pool1 = nn.MaxPool2d(2, 2)   # 128x128
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
-        self.pool2 = nn.MaxPool2d(2, 2)   # → 64x64
+        self.pool2 = nn.MaxPool2d(2, 2)   # 64x64
         self.conv3 = nn.Conv2d(64, 128, kernel_size=3, padding=1)
-        self.pool3 = nn.MaxPool2d(2, 2)   # → 32x32
+        self.pool3 = nn.MaxPool2d(2, 2)   # 32x32
 
         # Fully connected layers
         self.fc1 = nn.Linear(128 * 32 * 32, 256)  # 131072 inputs
@@ -68,14 +69,14 @@ preprocess = transforms.Compose([
                          std=[0.229, 0.224, 0.225])
 ])
 
-# === CAMERA LOOP ===
+# Camera loop
 cap = cv2.VideoCapture(0)
 print("Starting live ASL recognition — press Q to quit")
 
 while cap.isOpened():
     success, frame = cap.read()
     if not success:
-        print("⚠️ Unable to access camera!")
+        print("Unable to access camera!")
         break
 
     frame = cv2.flip(frame, 1)
@@ -131,9 +132,6 @@ while cap.isOpened():
                 bar_len = int(p * MAX_BAR_LEN)
                 bar = "█" * bar_len
                 print(f"{cls:10s} | {bar:<40s} {p*100:6.2f}%")
-
-
-
 
     # Display frame with prediction
     cv2.putText(frame, prediction_text, (10, 40),
