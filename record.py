@@ -21,14 +21,14 @@ hands = mp_hands.Hands(
 )
 
 # Create dataset folders (A–Z + nothing)
-labels = [chr(i) for i in range(ord('A'), ord('Z') + 1)] + ['nothing']
+labels = [chr(i) for i in range(ord('A'), ord('Z') + 1)]
 for label in labels:
     os.makedirs(os.path.join(DATASET_DIR, label), exist_ok=True)
 
-# === Capture ===
+# Image capture
 cap = cv2.VideoCapture(CAM_INDEX)
 cap.set(cv2.CAP_PROP_FPS, FPS)
-print("🎥 Press a letter key (A–Z) to start labeling, or N for 'nothing'. Press Q to quit.")
+print("Press a letter key (A–Z) to start labeling. Press '.' (period) to quit.")
 
 current_label = None
 last_save = time.time()
@@ -59,10 +59,8 @@ while cap.isOpened():
     key = cv2.waitKey(1) & 0xFF
 
     # Keyboard controls
-    if key == ord('q'):
+    if key == ord('.'): # exit key is period
         break
-    elif key == ord('n'):
-        current_label = 'nothing'
     elif ord('a') <= key <= ord('z'):
         current_label = chr(key).upper()
 
