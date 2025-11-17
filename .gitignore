@@ -1,3 +1,4 @@
 dataset/**
-asl_model.pth
+dataset_small/**
+models/**
 dataset.zip

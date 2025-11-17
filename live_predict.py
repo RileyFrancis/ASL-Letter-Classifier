@@ -7,12 +7,12 @@ import torch.nn.functional as F
 from torchvision import transforms
 
 # === CONFIG ===
-MODEL_PATH = "asl_model.pth"   # your saved model
+MODEL_PATH = "asl_model_large.pth"   # your saved model
 IMG_SIZE = 256                 # must match training
-CLASS_NAMES = [chr(i) for i in range(ord('A'), ord('Z') + 1)] + ["nothing"]
+CLASS_NAMES = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'O', 'P', 'R']
 
 class CNNClassifier(nn.Module):
-    def __init__(self, num_classes=3):
+    def __init__(self, num_classes=16):
         super().__init__()
 
         # Convolutional backbone
@@ -40,16 +40,16 @@ class CNNClassifier(nn.Module):
         return x
 
 
-# === DEVICE ===
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"🔧 Using device: {device}")
+print(f"Using device: {device}")
 
-# === LOAD MODEL ===
-model = torch.load(MODEL_PATH, map_location=device)
+# Load the model
+torch.serialization.add_safe_globals([CNNClassifier])
+model = torch.load(MODEL_PATH, map_location=device, weights_only=False)
 model.eval().to(device)
-print("✅ Model loaded successfully")
+print("Model loaded successfully!")
 
-# === MEDIAPIPE HANDS ===
+# mediapipe hands
 mp_hands = mp.solutions.hands
 mp_draw = mp.solutions.drawing_utils
 hands = mp_hands.Hands(
@@ -59,7 +59,7 @@ hands = mp_hands.Hands(
     min_tracking_confidence=0.5
 )
 
-# === PREPROCESSING TRANSFORM ===
+# preprocessing transformation
 preprocess = transforms.Compose([
     transforms.ToPILImage(),
     transforms.Resize((IMG_SIZE, IMG_SIZE)),
@@ -70,12 +70,12 @@ preprocess = transforms.Compose([
 
 # === CAMERA LOOP ===
 cap = cv2.VideoCapture(0)
-print("🎥 Starting live ASL recognition — press Q to quit")
+print("Starting live ASL recognition — press Q to quit")
 
 while cap.isOpened():
     success, frame = cap.read()
     if not success:
-        print("⚠️ Unable to access camera")
+        print("⚠️ Unable to access camera!")
         break
 
     frame = cv2.flip(frame, 1)
@@ -97,8 +97,8 @@ while cap.isOpened():
         xmin, xmax = int(min(x_coords) * w), int(max(x_coords) * w)
         ymin, ymax = int(min(y_coords) * h), int(max(y_coords) * h)
 
-        # Pad slightly
-        pad = 40
+        # Add padding to the surrounding hand
+        pad = 20
         xmin, ymin = max(0, xmin - pad), max(0, ymin - pad)
         xmax, ymax = min(w, xmax + pad), min(h, ymax + pad)
 
@@ -119,12 +119,21 @@ while cap.isOpened():
             confidence_text = f"{top_class} ({confidence*100:.1f}%)"
             prediction_text = confidence_text
 
-            # Display confidence bar chart on console
             print("\033c", end="")  # clear console
-            print("📊 Confidence per class:")
-            sorted_indices = np.argsort(probs)[::-1]
-            for i in sorted_indices[:5]:
-                print(f"  {CLASS_NAMES[i]:10s}: {probs[i]*100:6.2f}%")
+            print("Confidence per class:\n")
+
+            MAX_BAR_LEN = 40
+
+            num_probs = len(probs)               # model output size
+            for idx in range(num_probs):         # only iterate over what exists
+                cls = CLASS_NAMES[idx]           # match alphabetical order
+                p = probs[idx]
+                bar_len = int(p * MAX_BAR_LEN)
+                bar = "█" * bar_len
+                print(f"{cls:10s} | {bar:<40s} {p*100:6.2f}%")
+
+
+
 
     # Display frame with prediction
     cv2.putText(frame, prediction_text, (10, 40),
