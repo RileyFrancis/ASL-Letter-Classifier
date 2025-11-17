@@ -28,3 +28,9 @@ You can find both of these datasets available on Kaggle at https://kaggle.com/da
 
 ### Model Training
 To train a new model, you can use the `asl_alphabet_classifier.ipynb` Jupyter Notebook file. Before running, change the dataset path accordingly to your unzipped dataset folder (either the full or small dataset). After all cells are executed, a model is saved in the `models` folder.
+
+### Live Prediction
+Once a model has been trained, you can run a live prediction program that classifies handshapes in real time. First modify the path in `live_predict.py` to match your trained model. Then execute the following command:
+```python
+python live_predict.py
+```

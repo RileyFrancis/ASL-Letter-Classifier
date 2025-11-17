@@ -6,7 +6,7 @@ import mediapipe as mp
 import torch.nn.functional as F
 from torchvision import transforms
 
-MODEL_PATH = "asl_model_large.pth"
+MODEL_PATH = "models/asl_model_large.pth"
 IMG_SIZE = 256
 CLASS_NAMES = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 
                'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y'] \
