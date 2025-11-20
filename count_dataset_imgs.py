@@ -22,7 +22,7 @@ if __name__ == "__main__":
     else:
         counts = count_images_per_class(DATASET_DIR)
         total = sum(counts.values())
-        print("\n📊 Image counts per class:")
+        print("Image counts per class:")
         for cls, n in counts.items():
             print(f"  {cls:10s} : {n:5d}")
-        print(f"\n🧮 Total images: {total}")
+        print(f"Total images: {total}")

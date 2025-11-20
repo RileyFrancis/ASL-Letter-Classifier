@@ -130,7 +130,7 @@ while cap.isOpened():
 
     # HAND DETECTED
     if results.hand_landmarks:
-        lms = results.hand_landmarks[0] # list of all 21 hand landmarks
+        lms = results.hand_landmarks[0] # list of all hand landmarks
 
         # Draw wireframe
         if DRAW_LANDMARKS:
