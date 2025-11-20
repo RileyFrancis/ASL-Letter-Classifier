@@ -1,10 +1,9 @@
 # ASL-Letter-Classifier
 
-### Installation
+## Installation
 It is highly recommended that you use Anaconda to set up an environment. If you do not have conda installed, please refer to https://www.anaconda.com/download.
 
-##### Clone the Git repository
-Clone the GitHub repository
+### Clone the Git repository
 ```bash
 # Using https
 git clone https://github.com/RileyFrancis/ASL-Letter-Classifier.git
@@ -13,10 +12,11 @@ git clone https://github.com/RileyFrancis/ASL-Letter-Classifier.git
 git clone git@github.com:RileyFrancis/ASL-Letter-Classifier.git
 ```
 
-##### Set up conda environment
+### Set up conda environment
 ```bash
 conda env create -f environment.yml
 conda activate asl
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 ```
 
 ### Data
