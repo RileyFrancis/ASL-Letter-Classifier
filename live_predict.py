@@ -166,20 +166,26 @@ while cap.isOpened():
             # CNN inference
             with torch.no_grad():
                 outputs = model(img)
-                probs = F.softmax(outputs, dim=1)[0].cpu().numpy()
 
-            top_idx = np.argmax(probs)
-            prediction_text = f"{CLASS_NAMES[top_idx]} ({probs[top_idx]*100:.1f}%)"
+            top_idx = outputs.argmax(dim=1).item()
+
+            probs = F.softmax(outputs, dim=1)[0]
+            confidence = probs[top_idx].item() * 100
+
+            prediction_text = f"{CLASS_NAMES[top_idx]} ({confidence:.1f}%)"
+
+
 
             # class printout
             frame_count += 1
-            print("\033c", end="")
-            print("Confidence per class:\n")
+            if frame_count % 5:
+                print("\033c", end="")
+                print("Confidence per class:\n")
 
-            for cls, p in zip(CLASS_NAMES, probs):
-                bar_len = int(p * 40)
-                bar = "█" * bar_len
-                print(f"{cls:10s} | {bar:<40s} {p*100:6.2f}%")
+                for cls, p in zip(CLASS_NAMES, probs):
+                    bar_len = int(p.item() * 40)
+                    bar = "█" * bar_len
+                    print(f"{cls:10s} | {bar:<40s} {p.item()*100:6.2f}%")
 
 
     # Display result
