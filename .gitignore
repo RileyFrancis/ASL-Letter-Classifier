@@ -3,3 +3,6 @@ dataset_small/**
 models/**
 dataset.zip
 dataset_small.zip
+tf_model/**
+web_model_fp16/**
+web_models/**
